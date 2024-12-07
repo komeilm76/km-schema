@@ -36,6 +36,8 @@
   "dependencies": {
     "@types/node": "^22.5.5",
     "cross-env": "^7.0.3",
+    "jsonrepair": "^3.11.1",
+    "mongoose": "^8.8.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {

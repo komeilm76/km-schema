@@ -1,4 +1,5 @@
 import { z, ZodType, ZodTypeAny } from 'zod';
+import shape from '../../shape';
 
 const validatorSchema = z.object({
   method: z.union([z.literal('get'), z.literal('post'), z.literal('put'), z.literal('delete')]),
@@ -177,12 +178,6 @@ const makeSchema = <
   };
 };
 
-const paginationSchema = z.object({
-  currentPage: z.number().min(1),
-  totalItems: z.number().min(0),
-  itemsPerPage: z.number().min(1),
-});
-
 const responseShape = <DATA extends ZodTypeAny>(data: DATA) => {
   const item = () => {
     return z.object({
@@ -198,7 +193,7 @@ const responseShape = <DATA extends ZodTypeAny>(data: DATA) => {
       },
       withPagination: () => {
         return z.object({
-          pagination: paginationSchema,
+          pagination: shape.paginationSchema(),
           data: data.array(),
         });
       },
