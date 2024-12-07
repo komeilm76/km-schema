@@ -80,12 +80,22 @@ const makeSchema = <
     }
   };
 
-  const makeRequestConfig = <ENTRY extends z.infer<typeof requestConfig>>(entry: ENTRY) => {
-    let parseResult = requestConfig.safeParse(entry);
-    if (parseResult.success) {
-      return parseResult.data as ENTRY;
+  const makeRequestConfig = <
+    ENTRY_BODY extends z.infer<typeof body>,
+    ENTRY_PARAMS extends z.infer<typeof params>
+  >(entry: {
+    body: ENTRY_BODY;
+    params: ENTRY_PARAMS;
+  }) => {
+    let parseResultOfBody = requestConfig.safeParse(entry.body);
+    let parseResultOfParams = requestConfig.safeParse(entry.params);
+    if (parseResultOfBody.success && parseResultOfParams) {
+      return { body: parseResultOfBody.data, params: parseResultOfParams.data } as {
+        body: ENTRY_BODY;
+        params: ENTRY_PARAMS;
+      };
     } else {
-      throw parseResult.error;
+      throw parseResultOfBody.error;
     }
   };
 

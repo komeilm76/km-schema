@@ -14,7 +14,18 @@ const makeSchema = <KEY extends string, DOCUMENT extends AnyZodObject>(config: {
   const all = z.object({
     key: z.literal(`${config.key}`),
     fullKey: z.literal(`${config.key}s`),
-    document: config.document,
+    entryDocument: config.document,
+    entryDocumentWithId: config.document.merge(
+      z.object({
+        _id: z.instanceof(mongoose.Schema.ObjectId),
+      })
+    ),
+    entryDocumentWithDate: config.document.merge(
+      z.object({
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      })
+    ),
     fullDocument: config.document.and(
       z.object({
         createdAt: z.date(),
@@ -24,14 +35,18 @@ const makeSchema = <KEY extends string, DOCUMENT extends AnyZodObject>(config: {
     ),
   });
 
-  const document = all.shape.document;
+  const entryDocument = all.shape.entryDocument;
+  const entryDocumentWithId = all.shape.entryDocumentWithId;
+  const entryDocumentWithDate = all.shape.entryDocumentWithDate;
   const fullDocument = all.shape.fullDocument;
   const key = all.shape.key._def.value;
   const fullKey = all.shape.fullKey._def.value;
 
   return {
     all,
-    document,
+    entryDocument,
+    entryDocumentWithId,
+    entryDocumentWithDate,
     fullDocument,
     key,
     fullKey,

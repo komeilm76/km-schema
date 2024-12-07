@@ -125,14 +125,30 @@ const makeSchema = <
       throw parseResult.error;
     }
   };
-  const makeRequestConfig = <ENTRY extends z.infer<typeof requestConfig>>(entry: ENTRY) => {
-    let parseResult = requestConfig.safeParse(entry);
-    if (parseResult.success) {
-      return parseResult.data as ENTRY;
+
+  const makeRequestConfig = <
+    ENTRY_BODY extends z.infer<typeof body>,
+    ENTRY_PARAMS extends z.infer<typeof params>,
+    ENTRY_QUERY extends z.infer<typeof query>
+  >(entry: {
+    body: ENTRY_BODY;
+    params: ENTRY_PARAMS;
+    query: ENTRY_QUERY;
+  }) => {
+    let parseResultOfBody = requestConfig.safeParse(entry.body);
+    let parseResultOfParams = requestConfig.safeParse(entry.params);
+    let parseResultOfQuery = requestConfig.safeParse(entry.query);
+    if (parseResultOfBody.success && parseResultOfParams.success && parseResultOfQuery.success) {
+      return {
+        body: parseResultOfBody.data,
+        params: parseResultOfParams.data,
+        query: parseResultOfQuery.data,
+      } as { body: ENTRY_BODY; params: ENTRY_PARAMS; query: ENTRY_QUERY };
     } else {
-      throw parseResult.error;
+      throw parseResultOfBody.error;
     }
   };
+
   const makeResponse = <ENTRY extends z.infer<typeof response>>(entry: ENTRY) => {
     let parseResult = response.safeParse(entry);
     if (parseResult.success) {
