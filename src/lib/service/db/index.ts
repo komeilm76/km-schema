@@ -15,12 +15,12 @@ const makeSchema = <KEY extends string, DOCUMENT extends AnyZodObject>(config: {
     key: z.literal(`${config.key}`),
     fullKey: z.literal(`${config.key}s`),
     entryDocument: config.document,
-    entryDocumentWithId: config.document.merge(
+    entryDocumentWithId: config.document.and(
       z.object({
         _id: z.instanceof(mongoose.Schema.ObjectId),
       })
     ),
-    entryDocumentWithDate: config.document.merge(
+    entryDocumentWithDate: config.document.and(
       z.object({
         createdAt: z.date(),
         updatedAt: z.date(),
