@@ -20,40 +20,40 @@ const validatorSchema = z.object({
   response: z.instanceof(ZodType),
 });
 
-export type IUseShapeSchema = {
-  all: {
-    request: {
-      method: z.infer<typeof methodSchema>;
-      auth: z.infer<typeof authSchema>;
-      path: string;
-      body: object;
-      params: object;
-      query: object;
-    };
-    response: object;
-  };
-  request: {
-    method: z.infer<typeof methodSchema>;
-    auth: z.infer<typeof authSchema>;
-    path: string;
-    body: object;
-    params: object;
-    query: object;
-  };
-  requestConfig: {
-    body: object;
-    params: object;
-    query: object;
-  };
-  body: object;
-  params: object;
-  query: object;
-  response: object;
-  method: z.infer<typeof methodSchema>;
-  auth: z.infer<typeof authSchema>;
-  path: string;
-  needAuthentication: boolean;
-};
+export const apiOutputShapeSchema = z.object({
+  all: z.object({
+    request: z.object({
+      method: methodSchema,
+      auth: authSchema,
+      path: z.string(),
+      body: z.object({}),
+      params: z.object({}),
+      query: z.object({}),
+    }),
+    response: z.object({}),
+  }),
+  request: z.object({
+    method: methodSchema,
+    auth: authSchema,
+    path: z.string(),
+    body: z.object({}),
+    params: z.object({}),
+    query: z.object({}),
+  }),
+  requestConfig: z.object({
+    body: z.object({}),
+    params: z.object({}),
+    query: z.object({}),
+  }),
+  body: z.object({}),
+  params: z.object({}),
+  query: z.object({}),
+  response: z.object({}),
+  method: methodSchema,
+  auth: authSchema,
+  path: z.string(),
+  needAuthentication: z.boolean(),
+});
 
 const makeSchema = <
   METHOD extends 'get' | 'post' | 'put' | 'delete',
@@ -269,4 +269,5 @@ const responseShape = <DATA extends ZodTypeAny>(data: DATA) => {
 export default {
   makeSchema,
   responseShape,
+  apiOutputShapeSchema,
 };
