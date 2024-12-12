@@ -1,18 +1,18 @@
 import { z, ZodType, ZodTypeAny } from 'zod';
 import shape from '../../shape';
 
-const methodSchema = z.union([
+const apiMethodSchema = z.union([
   z.literal('get'),
   z.literal('post'),
   z.literal('put'),
   z.literal('delete'),
 ]);
 
-const authSchema = z.union([z.literal('YES'), z.literal('NO')]);
+const apiAuthStatusSchema = z.union([z.literal('YES'), z.literal('NO')]);
 
 const validatorSchema = z.object({
-  method: methodSchema,
-  auth: authSchema,
+  method: apiMethodSchema,
+  auth: apiAuthStatusSchema,
   path: z.string().startsWith('/'),
   body: z.instanceof(ZodType),
   params: z.instanceof(ZodType),
@@ -20,40 +20,40 @@ const validatorSchema = z.object({
   response: z.instanceof(ZodType),
 });
 
-export const apiOutputShapeSchema = z.object({
-  all: z.object({
-    request: z.object({
-      method: methodSchema,
-      auth: authSchema,
-      path: z.string(),
-      body: z.object({}),
-      params: z.object({}),
-      query: z.object({}),
-    }),
-    response: z.object({}),
-  }),
-  request: z.object({
-    method: methodSchema,
-    auth: authSchema,
-    path: z.string(),
-    body: z.object({}),
-    params: z.object({}),
-    query: z.object({}),
-  }),
-  requestConfig: z.object({
-    body: z.object({}),
-    params: z.object({}),
-    query: z.object({}),
-  }),
-  body: z.object({}),
-  params: z.object({}),
-  query: z.object({}),
-  response: z.object({}),
-  method: methodSchema,
-  auth: authSchema,
-  path: z.string(),
-  needAuthentication: z.boolean(),
-});
+// export const apiOutputShapeSchema = z.object({
+//   all: z.object({
+//     request: z.object({
+//       method: apiMethodSchema,
+//       auth: apiAuthStatusSchema,
+//       path: z.string(),
+//       body: z.object({}),
+//       params: z.object({}),
+//       query: z.object({}),
+//     }),
+//     response: z.object({}),
+//   }),
+//   request: z.object({
+//     method: apiMethodSchema,
+//     auth: apiAuthStatusSchema,
+//     path: z.string(),
+//     body: z.object({}),
+//     params: z.object({}),
+//     query: z.object({}),
+//   }),
+//   requestConfig: z.object({
+//     body: z.object({}),
+//     params: z.object({}),
+//     query: z.object({}),
+//   }),
+//   body: z.object({}),
+//   params: z.object({}),
+//   query: z.object({}),
+//   response: z.object({}),
+//   method: apiMethodSchema,
+//   auth: apiAuthStatusSchema,
+//   path: z.string(),
+//   needAuthentication: z.boolean(),
+// });
 
 const makeSchema = <
   METHOD extends 'get' | 'post' | 'put' | 'delete',
@@ -269,5 +269,7 @@ const responseShape = <DATA extends ZodTypeAny>(data: DATA) => {
 export default {
   makeSchema,
   responseShape,
-  apiOutputShapeSchema,
+  // apiOutputShapeSchema,
+  apiMethodSchema,
+  apiAuthStatusSchema,
 };
