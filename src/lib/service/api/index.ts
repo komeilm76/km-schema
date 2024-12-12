@@ -1,15 +1,59 @@
 import { z, ZodType, ZodTypeAny } from 'zod';
 import shape from '../../shape';
 
+const methodSchema = z.union([
+  z.literal('get'),
+  z.literal('post'),
+  z.literal('put'),
+  z.literal('delete'),
+]);
+
+const authSchema = z.union([z.literal('YES'), z.literal('NO')]);
+
 const validatorSchema = z.object({
-  method: z.union([z.literal('get'), z.literal('post'), z.literal('put'), z.literal('delete')]),
-  auth: z.union([z.literal('YES'), z.literal('NO')]),
+  method: methodSchema,
+  auth: authSchema,
   path: z.string().startsWith('/'),
   body: z.instanceof(ZodType),
   params: z.instanceof(ZodType),
   query: z.instanceof(ZodType),
   response: z.instanceof(ZodType),
 });
+
+export type IUseShapeSchema = {
+  all: {
+    request: {
+      method: z.infer<typeof methodSchema>;
+      auth: z.infer<typeof authSchema>;
+      path: string;
+      body: object;
+      params: object;
+      query: object;
+    };
+    response: object;
+  };
+  request: {
+    method: z.infer<typeof methodSchema>;
+    auth: z.infer<typeof authSchema>;
+    path: string;
+    body: object;
+    params: object;
+    query: object;
+  };
+  requestConfig: {
+    body: object;
+    params: object;
+    query: object;
+  };
+  body: object;
+  params: object;
+  query: object;
+  response: object;
+  method: z.infer<typeof methodSchema>;
+  auth: z.infer<typeof authSchema>;
+  path: string;
+  needAuthentication: boolean;
+};
 
 const makeSchema = <
   METHOD extends 'get' | 'post' | 'put' | 'delete',
