@@ -1,6 +1,6 @@
 {
   "name": "km-schema",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "ready schemas for use in applcations",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
