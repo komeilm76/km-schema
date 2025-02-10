@@ -6,6 +6,9 @@ const apiMethodSchema = z.union([
   z.literal('post'),
   z.literal('put'),
   z.literal('delete'),
+  z.literal('head'),
+  z.literal('options'),
+  z.literal('patch'),
 ]);
 
 const apiAuthStatusSchema = z.union([z.literal('YES'), z.literal('NO')]);
@@ -20,44 +23,10 @@ const validatorSchema = z.object({
   response: z.instanceof(ZodType),
 });
 
-// export const apiOutputShapeSchema = z.object({
-//   all: z.object({
-//     request: z.object({
-//       method: apiMethodSchema,
-//       auth: apiAuthStatusSchema,
-//       path: z.string(),
-//       body: z.object({}),
-//       params: z.object({}),
-//       query: z.object({}),
-//     }),
-//     response: z.object({}),
-//   }),
-//   request: z.object({
-//     method: apiMethodSchema,
-//     auth: apiAuthStatusSchema,
-//     path: z.string(),
-//     body: z.object({}),
-//     params: z.object({}),
-//     query: z.object({}),
-//   }),
-//   requestConfig: z.object({
-//     body: z.object({}),
-//     params: z.object({}),
-//     query: z.object({}),
-//   }),
-//   body: z.object({}),
-//   params: z.object({}),
-//   query: z.object({}),
-//   response: z.object({}),
-//   method: apiMethodSchema,
-//   auth: apiAuthStatusSchema,
-//   path: z.string(),
-//   needAuthentication: z.boolean(),
-// });
-
 const makeSchema = <
   METHOD extends 'get' | 'post' | 'put' | 'delete',
   AUTH extends 'YES' | 'NO',
+  DISABLE extends 'YES' | 'NO',
   PATH extends string,
   BODY extends ZodTypeAny,
   PARAMS extends ZodTypeAny,
@@ -66,6 +35,7 @@ const makeSchema = <
 >(config: {
   method: METHOD;
   auth: AUTH;
+  disable: DISABLE;
   path: PATH;
   body: BODY;
   params: PARAMS;
@@ -77,6 +47,7 @@ const makeSchema = <
     request: z.object({
       method: z.literal(config.method),
       auth: z.literal(config.auth),
+      disable: z.literal(config.disable),
       path: z.literal(config.path),
       body: config.body,
       params: config.params,
@@ -95,8 +66,10 @@ const makeSchema = <
   const query = all.shape.request.shape.query;
   const method = all.shape.request.shape.method._def.value;
   const auth = all.shape.request.shape.auth._def.value;
-  const path = all.shape.request.shape.path._def.value;
   const needAuthentication = all.shape.request.shape.auth._def.value == 'YES' ? true : false;
+  const disable = all.shape.request.shape.disable._def.value;
+  const isDisabled = all.shape.request.shape.disable._def.value == 'YES' ? true : false;
+  const path = all.shape.request.shape.path._def.value;
   const response = all.shape.response;
 
   const makeBody = <ENTRY extends z.infer<typeof body>>(entry: ENTRY) => {
@@ -228,6 +201,8 @@ const makeSchema = <
     response,
     auth,
     needAuthentication,
+    disable,
+    isDisabled,
     makeBody,
     makeParams,
     stringifyParams,
