@@ -88,20 +88,12 @@ const makeSchema = <
       throw parseResult.error;
     }
   };
-  const makeParamsShape = <ENTRY extends z.infer<typeof params>>(
-    entry: ENTRY,
-    orders: (keyof ENTRY)[]
-  ) => {
-    let parseResult = params.safeParse(entry);
-    if (parseResult.success) {
-      let shapeAsString = '';
-      orders.forEach((item) => {
-        shapeAsString = `${shapeAsString}/:${item as string}`;
-      });
-      return shapeAsString;
-    } else {
-      throw parseResult.error;
-    }
+  const makeParamsShape = <ENTRY extends z.infer<typeof params>>(orders: (keyof ENTRY)[]) => {
+    let shapeAsString = '';
+    orders.forEach((item) => {
+      shapeAsString = `${shapeAsString}/:${item as string}`;
+    });
+    return shapeAsString;
   };
   const makeParamsString = <ENTRY extends z.infer<typeof params>>(
     entry: ENTRY,
@@ -125,7 +117,7 @@ const makeSchema = <
     let parseResult = params.safeParse(entry);
     if (parseResult.success) {
       let paramAsString = makeParamsString(entry, orders);
-      let shapeAsString = makeParamsShape(entry, orders);
+      let shapeAsString = makeParamsShape(orders);
       return {
         shape: shapeAsString,
         value: paramAsString,
@@ -189,6 +181,11 @@ const makeSchema = <
     }
   };
 
+  const makeFullPathShape = <ENTRY extends z.infer<typeof params>>(orders: (keyof ENTRY)[]) => {
+    let paramAsString = makeParamsShape(orders);
+    return `${path}${paramAsString}`;
+  };
+
   return {
     all,
     request,
@@ -204,11 +201,17 @@ const makeSchema = <
     disable,
     isDisabled,
     makeBody,
-    makeParams,
-    stringifyParams,
     makeQuery,
     makeRequestConfig,
+
     makeFullPath,
+    makeFullPathShape,
+
+    makeParams,
+    stringifyParams,
+    makeParamsString,
+    makeParamsShape,
+
     makeResponse,
   };
 };
